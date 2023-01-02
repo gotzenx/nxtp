@@ -105,6 +105,34 @@ library MerkleLib {
     revert MerkleLib__insert_treeIsFull();
   }
 
+  function insertStorage(Tree storage tree, bytes32 node) internal returns (Tree storage) {
+    // Update tree.count to increase the current count by 1 since we'll be including a new node.
+    uint256 size = ++tree.count;
+
+    // Loop starting at 0, ending when we've finished inserting the node (i.e. hashing it) into
+    // the active branch. Each loop we cut size in half, hashing the inserted node up the active
+    // branch along the way.
+    for (uint256 i; i < TREE_DEPTH; ) {
+      // Check if the current size is odd; if so, we set this index in the branch to be the node.
+      if ((size & 1) == 1) {
+        // If i > 0, then this node will be a hash of the original node with every layer up
+        // until layer `i`.
+        tree.branch[i] = node;
+        return tree;
+      }
+      // If the size is not yet odd, we hash the current index in the tree branch with the node.
+      node = keccak256(abi.encodePacked(tree.branch[i], node));
+      size >>= 1; // Cut size in half (statement equivalent to: `size /= 2`).
+
+      unchecked {
+        ++i;
+      }
+    }
+    // As the loop should always end prematurely with the `return` statement, this code should
+    // be unreachable. We revert here just to be safe.
+    revert MerkleLib__insert_treeIsFull();
+  }
+
   // ========= Read Methods =========
 
   /**

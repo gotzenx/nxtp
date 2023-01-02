@@ -153,6 +153,27 @@ contract MerkleTreeManager is ProposedOwnableUpgradeable {
     emit LeavesInserted(_root, _count, leaves);
   }
 
+  function insertStorage(bytes32[] memory leaves) public onlyArborist returns (bytes32 _root, uint256 _count) {
+    // For > 1 leaf, considerably more efficient to put this tree into memory, conduct operations,
+    // then re-assign it to storage - *especially* if we have multiple leaves to insert.
+
+    uint256 leafCount = leaves.length;
+    for (uint256 i; i < leafCount; ) {
+      // Insert the new node (using in-memory method).
+      tree.insertStorage(leaves[i]);
+      unchecked {
+        ++i;
+      }
+    }
+
+    // Get return details for convenience.
+    _count = tree.count;
+    // NOTE: Root calculation method currently reads from storage only.
+    _root = tree.root();
+
+    emit LeavesInserted(_root, _count, leaves);
+  }
+
   /**
    * @notice Inserts the given leaf into the tree.
    * @param leaf The leaf to be inserted into the tree.

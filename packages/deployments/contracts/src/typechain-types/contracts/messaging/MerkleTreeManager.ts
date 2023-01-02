@@ -36,6 +36,7 @@ export interface MerkleTreeManagerInterface extends utils.Interface {
     "initialize(address)": FunctionFragment;
     "insert(bytes32)": FunctionFragment;
     "insert(bytes32[])": FunctionFragment;
+    "insertStorage(bytes32[])": FunctionFragment;
     "owner()": FunctionFragment;
     "proposeNewOwner(address)": FunctionFragment;
     "proposed()": FunctionFragment;
@@ -58,6 +59,7 @@ export interface MerkleTreeManagerInterface extends utils.Interface {
       | "initialize"
       | "insert(bytes32)"
       | "insert(bytes32[])"
+      | "insertStorage"
       | "owner"
       | "proposeNewOwner"
       | "proposed"
@@ -88,6 +90,10 @@ export interface MerkleTreeManagerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "insert(bytes32[])",
+    values: [PromiseOrValue<BytesLike>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "insertStorage",
     values: [PromiseOrValue<BytesLike>[]]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
@@ -131,6 +137,10 @@ export interface MerkleTreeManagerInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "insert(bytes32[])",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "insertStorage",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -295,6 +305,11 @@ export interface MerkleTreeManager extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    insertStorage(
+      leaves: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     proposeNewOwner(
@@ -353,6 +368,11 @@ export interface MerkleTreeManager extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  insertStorage(
+    leaves: PromiseOrValue<BytesLike>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
   proposeNewOwner(
@@ -403,6 +423,11 @@ export interface MerkleTreeManager extends BaseContract {
     ): Promise<[string, BigNumber] & { _root: string; _count: BigNumber }>;
 
     "insert(bytes32[])"(
+      leaves: PromiseOrValue<BytesLike>[],
+      overrides?: CallOverrides
+    ): Promise<[string, BigNumber] & { _root: string; _count: BigNumber }>;
+
+    insertStorage(
       leaves: PromiseOrValue<BytesLike>[],
       overrides?: CallOverrides
     ): Promise<[string, BigNumber] & { _root: string; _count: BigNumber }>;
@@ -514,6 +539,11 @@ export interface MerkleTreeManager extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    insertStorage(
+      leaves: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     proposeNewOwner(
@@ -567,6 +597,11 @@ export interface MerkleTreeManager extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     "insert(bytes32[])"(
+      leaves: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    insertStorage(
       leaves: PromiseOrValue<BytesLike>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
